@@ -63,6 +63,37 @@ public class Configuration
         }
     }
 
+    public static void setConfig(Path path)
+    {
+        try (BufferedReader reader = Files.newBufferedReader(path))
+        {
+            String line;
+            while ((line = reader.readLine()) != null)
+            {
+                String key = line.substring(0, line.indexOf('='));
+                Long val = Long.valueOf(line.substring(line.indexOf('=') + 1));
+                switch (key)
+                {
+                    case "m" -> m = val;
+                    case "n" -> n = val;
+                    case "init_plan_min" -> init_plan_min = val;
+                    case "init_plan_sec" -> init_plan_sec = val;
+                    case "init_budget" -> init_budget = val;
+                    case "init_center_dep" -> init_center_dep = val;
+                    case "plan_rev_min" -> plan_rev_min = val;
+                    case "plan_rev_sec" -> plan_rev_sec = val;
+                    case "rev_cost" -> rev_cost = val;
+                    case "max_dep" -> max_dep = val;
+                    case "interest_pct" -> interest_pct = val;
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            System.out.println(e.getMessage() + " : file not found");
+        }
+    }
+
     public static long getM()
     {
         return m;
