@@ -2,12 +2,15 @@ package Upbeat;
 
 import Game.*;
 
+import lombok.Data;
 import org.springframework.stereotype.Component;
 
 @Component
+@Data
 public class Game
 {
     private Player player1, player2;
+    private String nameP1;
     private boolean p1Ready, p2Ready;
     private Player winner;
     private Player turn;
@@ -22,12 +25,19 @@ public class Game
         if(player1 == null)
         {
             player1 = new Player(playerMessage.getName());
-            System.out.println(player1.getName());
+            nameP1 = player1.getName();
         }
-        else if(player2 == null)
+        else if(player2 == null && !playerMessage.getName().equals(player1.getName()))
         {
             player2 = new Player(playerMessage.getName());
-            System.out.println(player2.getName());
+        }
+        else if(player1 != null && player2 != null)
+        {
+            playerMessage.setError("player is full.");
+        }
+        else
+        {
+            playerMessage.setError("the username is already being used.");
         }
         return this;
     }
@@ -47,16 +57,22 @@ public class Game
 
     public Game deletePlayer(PlayerMessage playerMessage)
     {
-        if(player1.getName().equals(playerMessage.getName()) && player2 != null)
+        if(player1.getName().equals(playerMessage.getName()))
         {
-            player1 = player2;
-            player2 = null;
-            System.out.println("delete player1");
+            if(player2 == null)
+            {
+                player1 = null;
+            }
+            else
+            {
+                player1 = player2;
+                player2 = null;
+                nameP1 = player1.getName();
+            }
         }
         else
         {
             player2 = null;
-            System.out.println("delete player2");
         }
         return this;
     }

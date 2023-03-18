@@ -1,9 +1,10 @@
 package Upbeat;
 
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Data
 public class PlayerMessage
 {
     private String name;
+    private String error;
 }
