@@ -114,6 +114,11 @@ public class Configuration
         return init_center_dep;
     }
 
+    public static long getRev_cost()
+    {
+        return rev_cost;
+    }
+
     public static long getMax_dep()
     {
         return max_dep;
