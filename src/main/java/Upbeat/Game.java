@@ -63,7 +63,19 @@ public class Game
 
     public Game setConfig(ConfigMessage configMessage)
     {
-        Configuration.setConfig(configMessage.getConfig());
+        String config = "";
+        config += "m="+configMessage.getM()+"\n";
+        config += "n="+configMessage.getN()+"\n";
+        config += "init_plan_min="+configMessage.getInit_plan_min()+"\n";
+        config += "init_plan_sec="+configMessage.getInit_plan_sec()+"\n";
+        config += "init_budget="+configMessage.getInit_budget()+"\n";
+        config += "init_center_dep="+configMessage.getInit_center_dep()+"\n";
+        config += "plan_rev_min="+configMessage.getPlan_rev_min()+"\n";
+        config += "plan_rev_sec="+configMessage.getPlan_rev_sec()+"\n";
+        config += "rev_cost="+configMessage.getRev_cost()+"\n";
+        config += "max_dep="+configMessage.getMax_dep()+"\n";
+        config += "interest_pct="+configMessage.getInterest_pct();
+        Configuration.setConfig(config);
         return this;
     }
 
