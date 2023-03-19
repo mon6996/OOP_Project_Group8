@@ -6,5 +6,4 @@ import lombok.Data;
 public class PlayerMessage
 {
     private String name;
-    private String error;
 }

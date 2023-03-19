@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class Game
 {
     private Player player1, player2;
-    private String nameP1;
+    private String nameP1, nameP2;
     private boolean p1Ready, p2Ready;
     private Player winner;
     private Player turn;
@@ -22,22 +22,16 @@ public class Game
 
     public Game createPlayer(PlayerMessage playerMessage)
     {
+        String name = playerMessage.getName();
         if(player1 == null)
         {
-            player1 = new Player(playerMessage.getName());
+            player1 = new Player(name);
             nameP1 = player1.getName();
         }
-        else if(player2 == null && !playerMessage.getName().equals(player1.getName()))
+        else if(player2 == null && !name.equals(nameP1))
         {
-            player2 = new Player(playerMessage.getName());
-        }
-        else if(player1 != null && player2 != null)
-        {
-            playerMessage.setError("player is full.");
-        }
-        else
-        {
-            playerMessage.setError("the username is already being used.");
+            player2 = new Player(name);
+            nameP2 = player2.getName();
         }
         return this;
     }
@@ -62,17 +56,20 @@ public class Game
             if(player2 == null)
             {
                 player1 = null;
+                nameP1 = null;
             }
             else
             {
                 player1 = player2;
                 player2 = null;
                 nameP1 = player1.getName();
+                nameP2 = null;
             }
         }
         else
         {
             player2 = null;
+            nameP2 = null;
         }
         return this;
     }
