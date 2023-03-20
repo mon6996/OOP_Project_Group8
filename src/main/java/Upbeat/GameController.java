@@ -46,6 +46,13 @@ public class GameController
         return game.setConfig(configMessage);
     }
 
+    @MessageMapping("/setPlan")
+    @SendTo("/topic/game")
+    public Game setPlan(PlayerMessage playerMessage)
+    {
+        return game.setPlan(playerMessage);
+    }
+
     @MessageMapping("/upbeat")
     @SendTo("/topic/game")
     public Game createUpbeat()

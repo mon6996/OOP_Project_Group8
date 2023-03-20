@@ -2,18 +2,23 @@ package Upbeat;
 
 import Game.*;
 
-import lombok.Data;
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 @Component
-@Data
+@Getter
 public class Game
 {
     private Player player1, player2;
     private String nameP1, nameP2;
-    private boolean p1Ready, p2Ready;
+    private boolean p1Ready, p2Ready, completeSet;
     private Player winner;
-    private Player turn;
     private Upbeat upbeat;
 
     public Game()
@@ -42,7 +47,7 @@ public class Game
         {
             p1Ready = true;
         }
-        else
+        else if(player2.getName().equals(playerMessage.getName()))
         {
             p2Ready = true;
         }
@@ -89,6 +94,29 @@ public class Game
         config += "max_dep="+configMessage.getMax_dep()+"\n";
         config += "interest_pct="+configMessage.getInterest_pct();
         Configuration.setConfig(config);
+        completeSet = true;
+        return this;
+    }
+
+    public Game setPlan(PlayerMessage playerMessage)
+    {
+        Path path;
+        if(player1.getName().equals(playerMessage.getName()))
+        {
+            path = Paths.get("src/construction_plan_p1.txt");
+        }
+        else
+        {
+            path = Paths.get("src/construction_plan_p2.txt");
+        }
+        try
+        {
+            Files.write(path, playerMessage.getPlan().getBytes(StandardCharsets.UTF_8));
+        }
+        catch (IOException e)
+        {
+            System.out.println(e.getMessage());
+        }
         return this;
     }
 
