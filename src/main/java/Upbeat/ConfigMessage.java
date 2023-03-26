@@ -1,8 +1,10 @@
 package Upbeat;
 
-import lombok.Getter;
+import lombok.Data;
+import org.springframework.stereotype.Component;
 
-@Getter
+@Component
+@Data
 public class ConfigMessage
 {
     private long m;

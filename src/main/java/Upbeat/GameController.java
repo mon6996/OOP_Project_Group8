@@ -1,5 +1,7 @@
 package Upbeat;
 
+import Game.Configuration;
+
 import org.springframework.stereotype.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +9,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
-import org.springframework.stereotype.Controller;
 
 @Controller
 public class GameController
@@ -17,6 +18,8 @@ public class GameController
 
     @Autowired
     private Game game;
+    @Autowired
+    private ConfigMessage config;
 
     @MessageMapping("/newPlayer")
     @SendTo("/topic/game")
@@ -43,6 +46,7 @@ public class GameController
     @SendTo("/topic/game")
     public Game setConfig(ConfigMessage configMessage)
     {
+        config = configMessage;
         return game.setConfig(configMessage);
     }
 
@@ -64,5 +68,11 @@ public class GameController
     public Game sendInitialGame()
     {
         return game;
+    }
+
+    @SubscribeMapping("/getConfig")
+    public ConfigMessage sendConfig()
+    {
+        return config;
     }
 }
