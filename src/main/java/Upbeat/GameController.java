@@ -1,7 +1,5 @@
 package Upbeat;
 
-import Game.Configuration;
-
 import org.springframework.stereotype.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,13 +53,6 @@ public class GameController
     public Game setPlan(PlayerMessage playerMessage)
     {
         return game.setPlan(playerMessage);
-    }
-
-    @MessageMapping("/upbeat")
-    @SendTo("/topic/game")
-    public Game createUpbeat()
-    {
-        return game.createUpbeat();
     }
 
     @SubscribeMapping("/game")

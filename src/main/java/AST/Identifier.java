@@ -3,7 +3,7 @@ package AST;
 import Exception.EvalError;
 import Game.Configuration;
 import Game.Player;
-import Game.Upbeat;
+import Upbeat.Game;
 
 import java.util.Map;
 
@@ -40,11 +40,11 @@ public class Identifier implements Expr
         }
         else if(name.equals("deposit"))
         {
-            return Upbeat.getRegion(player.getCityCrew_m(), player.getCityCrew_n()).getDeposit();
+            return Game.getRegion(player.getCityCrew_m(), player.getCityCrew_n()).getDeposit();
         }
         else if(name.equals("int"))
         {
-            return Upbeat.getRegion(player.getCityCrew_m(), player.getCityCrew_n()).getInterest();
+            return Game.getRegion(player.getCityCrew_m(), player.getCityCrew_n()).getInterest();
         }
         else if(name.equals("maxdeposit"))
         {
