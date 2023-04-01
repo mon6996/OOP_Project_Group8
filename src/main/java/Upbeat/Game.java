@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.NoSuchElementException;
 
 @Component
 @Data
@@ -22,7 +23,7 @@ public class Game
 {
     private Player player1, player2;
     private String nameP1, nameP2;
-    private boolean completeSet;
+    private boolean p1Ready, p2Ready, completeSet;
     private Player currentTurn;
     private Player winner;
     private static Region[][] territory;
@@ -45,6 +46,19 @@ public class Game
         {
             player2 = new Player(name);
             nameP2 = player2.getName();
+        }
+        return this;
+    }
+
+    public Game ready(PlayerMessage playerMessage)
+    {
+        if(player1.getName().equals(playerMessage.getName()))
+        {
+            p1Ready = true;
+        }
+        else if(player2.getName().equals(playerMessage.getName()))
+        {
+            p2Ready = true;
         }
         return this;
     }
@@ -150,7 +164,7 @@ public class Game
             Node p = new PlanParser(tkz).parse();
             Files.write(file, playerMessage.getPlan().getBytes(StandardCharsets.UTF_8));
         }
-        catch (LexicalError | SyntaxError | EvalError e)
+        catch (NoSuchElementException | LexicalError | SyntaxError | EvalError e)
         {
             errorMgs = e.getMessage();
         }
