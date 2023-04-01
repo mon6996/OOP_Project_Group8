@@ -163,10 +163,7 @@ public class Player
                 }
             }
         }
-        else
-        {
-            done();
-        }
+        done();
     }
 
     public void move(long dir)
