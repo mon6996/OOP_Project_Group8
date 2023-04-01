@@ -223,6 +223,11 @@ public class Game
         }
     }
 
+    public static Region[][] getTerritory()
+    {
+        return territory;
+    }
+
     public static Region getRegion(int m, int n)
     {
         return territory[m][n];

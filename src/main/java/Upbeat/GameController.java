@@ -1,5 +1,7 @@
 package Upbeat;
 
+import Game.*;
+
 import org.springframework.stereotype.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +61,12 @@ public class GameController
     public Game sendInitialGame()
     {
         return game;
+    }
+
+    @SubscribeMapping("/territory")
+    public Region[][] sendTerritory()
+    {
+        return Game.getTerritory();
     }
 
     @SubscribeMapping("/getConfig")
