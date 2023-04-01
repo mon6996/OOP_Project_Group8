@@ -44,7 +44,7 @@ public class Identifier implements Expr
         }
         else if(name.equals("int"))
         {
-            return Game.getRegion(player.getCityCrew_m(), player.getCityCrew_n()).getInterest();
+            return (long) Game.getRegion(player.getCityCrew_m(), player.getCityCrew_n()).getInterest();
         }
         else if(name.equals("maxdeposit"))
         {

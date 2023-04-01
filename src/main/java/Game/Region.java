@@ -1,5 +1,10 @@
 package Game;
 
+import lombok.Getter;
+import org.springframework.stereotype.Component;
+
+@Component
+@Getter
 public class Region
 {
     private final int row, col;
@@ -17,24 +22,9 @@ public class Region
         interest = deposit*r/100.0;
     }
 
-    public int getRow()
-    {
-        return row;
-    }
-
-    public int getCol()
-    {
-        return col;
-    }
-
     public void setOwner(Player player)
     {
         owner = player;
-    }
-
-    public Player getOwner()
-    {
-        return owner;
     }
 
     public void updateDeposit(Long cost)
@@ -59,16 +49,6 @@ public class Region
     public void updateInterest()
     {
         interest = deposit*r/100.0;
-    }
-
-    public long getInterest()
-    {
-        return (long) interest;
-    }
-
-    public boolean isCityCenter()
-    {
-        return isCityCenter;
     }
 
     public void setCityCenter(Player player)

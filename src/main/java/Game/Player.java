@@ -6,9 +6,14 @@ import Parser.*;
 import Tokenizer.*;
 import Upbeat.Game;
 
+import lombok.Getter;
+import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
+@Getter
 public class Player
 {
     private String name;
@@ -29,10 +34,6 @@ public class Player
 
     public Map<String, Long> getVar()
     {
-//        if(varPlayer != null)
-//        {
-//            varPlayer.forEach((s, aLong) -> System.out.println(s + " = " + aLong));
-//        }
         return varPlayer;
     }
 
@@ -41,52 +42,12 @@ public class Player
         lose = true;
     }
 
-    public String getName()
-    {
-        return name;
-    }
-
-    public boolean getLose()
-    {
-        return lose;
-    }
-
-    public int getTurn()
-    {
-        return turn;
-    }
-
     public void setCityCenter(int position)
     {
         cityCenter_m = position/10;
         cityCenter_n = position%10;
         cityCrew_m = cityCenter_m;
         cityCrew_n = cityCenter_n;
-    }
-
-    public int getCityCenter_m()
-    {
-        return cityCenter_m;
-    }
-
-    public int getCityCenter_n()
-    {
-        return cityCenter_n;
-    }
-
-    public int getCityCrew_m()
-    {
-        return cityCrew_m;
-    }
-
-    public int getCityCrew_n()
-    {
-        return cityCrew_n;
-    }
-
-    public long getBudget()
-    {
-        return budget;
     }
 
     public void doPlan(String plan) throws EvalError
@@ -108,6 +69,14 @@ public class Player
         {
             endTurn = true;
             turn++;
+        }
+    }
+
+    public void changePlan()
+    {
+        if(budget >= Configuration.getRev_cost())
+        {
+            budget -= Configuration.getRev_cost();
         }
     }
 
