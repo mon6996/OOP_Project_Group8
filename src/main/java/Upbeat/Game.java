@@ -22,7 +22,7 @@ public class Game
 {
     private Player player1, player2;
     private String nameP1, nameP2;
-    private boolean p1Ready, p2Ready, completeSet;
+    private boolean completeSet;
     private Player currentTurn;
     private Player winner;
     private static Region[][] territory;
@@ -45,19 +45,6 @@ public class Game
         {
             player2 = new Player(name);
             nameP2 = player2.getName();
-        }
-        return this;
-    }
-
-    public Game ready(PlayerMessage playerMessage)
-    {
-        if(player1.getName().equals(playerMessage.getName()))
-        {
-            p1Ready = true;
-        }
-        else if(player2.getName().equals(playerMessage.getName()))
-        {
-            p2Ready = true;
         }
         return this;
     }
@@ -107,7 +94,7 @@ public class Game
         return this;
     }
 
-    private void setGame()
+    public void setGame()
     {
         int m = (int) Configuration.getM();
         int n = (int) Configuration.getN();
