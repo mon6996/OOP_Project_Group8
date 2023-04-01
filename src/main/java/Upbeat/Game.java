@@ -1,8 +1,12 @@
 package Upbeat;
 
+import AST.Node;
+import Tokenizer.*;
 import Game.*;
 import Exception.*;
 
+import Parser.PlanParser;
+import Tokenizer.Tokenizer;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +26,8 @@ public class Game
     private Player currentTurn;
     private Player winner;
     private static Region[][] territory;
+    private String playerMgs;
+    private String errorMgs;
 
     public Game()
     {
@@ -101,7 +107,7 @@ public class Game
         return this;
     }
 
-    public void setGame()
+    private void setGame()
     {
         int m = (int) Configuration.getM();
         int n = (int) Configuration.getN();
@@ -139,44 +145,70 @@ public class Game
 
     public Game setPlan(PlayerMessage playerMessage)
     {
-        Path path;
+        playerMgs = playerMessage.getName();
+        errorMgs = null;
+        Path file;
         if(player1.getName().equals(playerMessage.getName()))
         {
-            path = Paths.get("src/construction_plan_p1.txt");
+            file = Paths.get("src/construction_plan_p1.txt");
         }
         else
         {
-            path = Paths.get("src/construction_plan_p2.txt");
+            file = Paths.get("src/construction_plan_p2.txt");
         }
         try
         {
-            Files.write(path, playerMessage.getPlan().getBytes(StandardCharsets.UTF_8));
+            System.out.println(playerMessage.getPlan());
+            Tokenizer tkz = new PlanTokenizer(playerMessage.getPlan());
+            Node p = new PlanParser(tkz).parse();
+            Files.write(file, playerMessage.getPlan().getBytes(StandardCharsets.UTF_8));
+        }
+        catch (LexicalError | SyntaxError | EvalError e)
+        {
+            errorMgs = e.getMessage();
         }
         catch (IOException e)
         {
             System.out.println(e.getMessage());
         }
-
         return this;
     }
 
-    public void doPlan(String plan) throws EvalError
+    public Game changePlan(PlayerMessage playerMessage)
+    {
+        setPlan(playerMessage);
+        if(player1.getName().equals(playerMessage.getName()))
+        {
+            player1.changePlan();
+        }
+        else
+        {
+            player2.changePlan();
+        }
+        return this;
+    }
+
+    public void doPlan() throws EvalError, IOException
     {
         if(currentTurn.equals(player1))
         {
+            Path file = Paths.get("src/construction_plan_p1.txt");
+            String plan = Files.readString(file);
             player1.doPlan(plan);
         }
         else
         {
+            Path file = Paths.get("src/construction_plan_p2.txt");
+            String plan = Files.readString(file);
             player2.doPlan(plan);
         }
         currentTurn = currentTurn.equals(player1) ? player2 : player1;
 
-        if(player1.getLose())
+        if(player1.isLose())
         {
             winner = player2;
         }
-        else if(player2.getLose())
+        else if(player2.isLose())
         {
             winner = player1;
         }
@@ -192,7 +224,7 @@ public class Game
                 }
                 region.updateInterestPct();
                 region.updateInterest();
-                region.updateDeposit(region.getInterest());
+                region.updateDeposit((long) region.getInterest());
             }
         }
     }
