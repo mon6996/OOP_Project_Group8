@@ -9,7 +9,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
-
+import Game.ChangePlanMessage;
 @Controller
 public class GameController
 {
@@ -20,6 +20,8 @@ public class GameController
     private Game game;
     @Autowired
     private ConfigMessage config;
+
+
 
     @MessageMapping("/newPlayer")
     @SendTo("/topic/game")
@@ -68,6 +70,14 @@ public class GameController
     {
         return Game.getTerritory();
     }
+
+    @MessageMapping("/changePlan")
+    public void changePlan(ChangePlanMessage changePlanMessage) {
+        // Since the changePlanMessage is not used, we can remove it from the method signature
+        // and use a new instance of ChangePlanMessage when calling convertAndSend()
+        template.convertAndSend("/topic/changePlan", new ChangePlanMessage(changePlanMessage.getStatus()));
+    }
+
 
     @SubscribeMapping("/getConfig")
     public ConfigMessage sendConfig()
