@@ -78,6 +78,10 @@ public class GameController
         template.convertAndSend("/topic/changePlan", new ChangePlanMessage(changePlanMessage.getStatus()));
     }
 
+    public void confirmPlan(ChangePlanMessage changePlanMessage) {
+        template.convertAndSend("/topic/planConfirmation", new ChangePlanMessage(changePlanMessage.getStatus()));
+    }
+
 
     @SubscribeMapping("/getConfig")
     public ConfigMessage sendConfig()
