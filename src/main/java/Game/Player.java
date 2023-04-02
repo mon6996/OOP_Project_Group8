@@ -101,7 +101,7 @@ public class Player
             Region cityCenter = Game.getRegion(cityCenter_m, cityCenter_n);
             Region cur = Game.getRegion(cityCrew_m, cityCrew_n);
             int[] next;
-            if (cur.getOwner().equals(this))
+            if (cur.getOwner() != null)
             {
                 int dist = 0;
                 while ((cur.getRow() != cityCenter.getRow() && cur.getCol() != cityCenter.getCol()) || cur.getRow() != cityCenter.getRow() || cur.getCol() != cityCenter.getCol())
@@ -266,11 +266,11 @@ public class Player
                 else
                 {
                     opponent.updateDeposit(-opponent.getDeposit());
-                    opponent.setOwner(null);
                     if(opponent.isCityCenter())
                     {
                         opponent.getOwner().lose();
                     }
+                    opponent.setOwner(null);
                 }
             }
         }

@@ -29,7 +29,14 @@ public class Region
 
     public void updateDeposit(Long cost)
     {
-        deposit += cost;
+        if(deposit + cost <= Configuration.getMax_dep())
+        {
+            deposit += cost;
+        }
+        else
+        {
+            deposit = Configuration.getMax_dep();
+        }
     }
 
     public long getDeposit()

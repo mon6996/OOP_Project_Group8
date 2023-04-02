@@ -18,7 +18,7 @@ public class Attack implements Node
 
     public void evaluate(Map<String, Long> bindings, Player player) throws EvalError
     {
-        player.shoot(dir.eval(null, player), cost.eval(null, player));
+        player.shoot(dir.eval(bindings, player), cost.eval(bindings, player));
     }
 
     public void prettyPrint(StringBuilder s)

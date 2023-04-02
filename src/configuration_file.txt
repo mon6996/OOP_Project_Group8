@@ -1,10 +1,10 @@
-m=14
-n=14
-init_plan_min=7
-init_plan_sec=15
+m=16
+n=16
+init_plan_min=5
+init_plan_sec=0
 init_budget=5000
 init_center_dep=160
-plan_rev_min=4
+plan_rev_min=6
 plan_rev_sec=0
 rev_cost=200
 max_dep=1600000

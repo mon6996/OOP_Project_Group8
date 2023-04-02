@@ -9,7 +9,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
-import Game.ChangePlanMessage;
+
 @Controller
 public class GameController
 {
@@ -20,8 +20,6 @@ public class GameController
     private Game game;
     @Autowired
     private ConfigMessage config;
-
-
 
     @MessageMapping("/newPlayer")
     @SendTo("/topic/game")
@@ -66,10 +64,33 @@ public class GameController
         if(playerMessage.getName().equals(game.getPlayer1().getName()))
         {
             game.setP1Ready(true);
+            if (!playerMessage.isFirstPlan())
+            {
+                game.getPlayer1().changePlan();
+            }
         }
-        else
+        if(playerMessage.getName().equals(game.getPlayer2().getName()))
         {
             game.setP2Ready(true);
+            if (!playerMessage.isFirstPlan())
+            {
+                game.getPlayer2().changePlan();
+            }
+        }
+        return game;
+    }
+
+    @MessageMapping("/changPlan")
+    @SendTo("/topic/game")
+    public Game changPlan(PlayerMessage playerMessage)
+    {
+        if(playerMessage.getName().equals(game.getPlayer1().getName()))
+        {
+            game.setP1Ready(false);
+        }
+        if(playerMessage.getName().equals(game.getPlayer2().getName()))
+        {
+            game.setP2Ready(false);
         }
         return game;
     }
@@ -80,23 +101,17 @@ public class GameController
         return game;
     }
 
+    @SubscribeMapping("/doPlan")
+    public Game doPlan()
+    {
+        return game.doPlan();
+    }
+
     @SubscribeMapping("/territory")
     public Region[][] sendTerritory()
     {
         return Game.getTerritory();
     }
-
-    @MessageMapping("/changePlan")
-    public void changePlan(ChangePlanMessage changePlanMessage) {
-        // Since the changePlanMessage is not used, we can remove it from the method signature
-        // and use a new instance of ChangePlanMessage when calling convertAndSend()
-        template.convertAndSend("/topic/changePlan", new ChangePlanMessage(changePlanMessage.getStatus()));
-    }
-
-    public void confirmPlan(ChangePlanMessage changePlanMessage) {
-        template.convertAndSend("/topic/planConfirmation", new ChangePlanMessage(changePlanMessage.getStatus()));
-    }
-
 
     @SubscribeMapping("/getConfig")
     public ConfigMessage sendConfig()

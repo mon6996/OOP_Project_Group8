@@ -58,8 +58,6 @@ public class ActionCommandTest
         assertEquals(3, p1.getCityCrew_n());
     }
 
-
-
     @Test
     void testRelocate()
     {
@@ -69,6 +67,7 @@ public class ActionCommandTest
         game.setPlayer1(p1);
         game.setPlayer2(p2);
         game.setGame();
+        long budget = p1.getBudget();
         p1.setCityCenter(34);
         p1.move(5); // 4 , 3
         p1.move(4); // 5 , 3
@@ -79,7 +78,51 @@ public class ActionCommandTest
         p1.relocate();
         int cur = p1.getCityCrew_m()*10 + p1.getCityCrew_n(); // 71
         int newCity = p1.getCityCenter_m()*10 + p1.getCityCenter_n(); // 71
+        long dist = 5; // 3,4 -> 7,1
+        long cost = 1 + (5*dist + 10);
         assertEquals(cur, newCity);
+        assertEquals(budget - cost, p1.getBudget());
+
+    }
+
+    @Test
+    void testInvest()
+    {
+        Configuration.setConfig(path);
+        Player p1 = new Player("player1");
+        Player p2 = new Player("player2");
+        game.setPlayer1(p1);
+        game.setPlayer2(p2);
+        game.setGame();
+        long budget = p1.getBudget();
+        p1.setCityCenter(34);
+
+    }
+
+    @Test
+    void testCollect()
+    {
+        Configuration.setConfig(path);
+        Player p1 = new Player("player1");
+        Player p2 = new Player("player2");
+        game.setPlayer1(p1);
+        game.setPlayer2(p2);
+        game.setGame();
+        long budget = p1.getBudget();
+        p1.setCityCenter(34);
+    }
+
+    @Test
+    void testShoot()
+    {
+        Configuration.setConfig(path);
+        Player p1 = new Player("player1");
+        Player p2 = new Player("player2");
+        game.setPlayer1(p1);
+        game.setPlayer2(p2);
+        game.setGame();
+        long budget = p1.getBudget();
+        p1.setCityCenter(34);
     }
 
     @Test
@@ -106,6 +149,7 @@ public class ActionCommandTest
         Game.getRegion(5, 4).setOwner(null);
         Game.getRegion(2, 6).setOwner(null);
         assertEquals(0, p1.opponent());
+
     }
 
     @Test
@@ -123,5 +167,7 @@ public class ActionCommandTest
         Game.getRegion(m+2, n).setOwner(p2); // dist = 2
         Game.getRegion(m+2, n).updateDeposit(12345L); //digitsDep = 5
         assertEquals(100*2+5, p1.nearby(dir));
+
+
     }
 }

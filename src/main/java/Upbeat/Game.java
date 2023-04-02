@@ -172,20 +172,6 @@ public class Game
         return this;
     }
 
-    public Game changePlan(PlayerMessage playerMessage)
-    {
-        setPlan(playerMessage);
-        if(player1.getName().equals(playerMessage.getName()))
-        {
-            player1.changePlan();
-        }
-        else
-        {
-            player2.changePlan();
-        }
-        return this;
-    }
-
     public Game doPlan()
     {
         errorMgs = null;
