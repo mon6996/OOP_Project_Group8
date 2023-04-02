@@ -27,7 +27,7 @@ public class Game
     private Player winner;
     private static Region[][] territory;
     private String playerMgs;
-    private String errorMgs;
+    private String errorMgs = "";
 
     public Game()
     {
@@ -103,6 +103,8 @@ public class Game
 
     public void setGame()
     {
+        player1.updateBudget(Configuration.getInit_budget());
+        player2.updateBudget(Configuration.getInit_budget());
         int m = (int) Configuration.getM();
         int n = (int) Configuration.getN();
         territory = new Region[m][n];

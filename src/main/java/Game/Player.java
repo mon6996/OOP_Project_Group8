@@ -42,6 +42,11 @@ public class Player
         lose = true;
     }
 
+    public void updateBudget(long cost)
+    {
+        budget += cost;
+    }
+
     public void setCityCenter(int position)
     {
         cityCenter_m = position/10;
@@ -92,7 +97,7 @@ public class Player
     {
         if(budget > 0)
         {
-            --budget;
+            updateBudget(-1);
             Region cityCenter = Game.getRegion(cityCenter_m, cityCenter_n);
             Region cur = Game.getRegion(cityCrew_m, cityCrew_n);
             int[] next;
@@ -155,7 +160,7 @@ public class Player
                 int cost = 5*dist + 10;
                 if(budget >= cost)
                 {
-                    budget -= cost;
+                    updateBudget(-cost);;
                     Game.getRegion(cityCenter_m, cityCenter_n).changeCityCenter();
                     cur.setCityCenter(this);
                     cityCenter_m = cityCrew_m;
@@ -170,7 +175,7 @@ public class Player
     {
         if(budget > 0)
         {
-            --budget;
+            updateBudget(-1);;
         }
         else
         {
@@ -194,16 +199,16 @@ public class Player
         Region cur = Game.getRegion(cityCrew_m, cityCrew_n);
         if(budget - cost > 0)
         {
-            --budget;
+            updateBudget(-1);;
             if(cur.getDeposit() + cost <= Configuration.getMax_dep())
             {
-                budget -= cost;
+                updateBudget(-cost);;
                 cur.updateDeposit(cost);
             }
             else
             {
                 long newCost = Configuration.getMax_dep() - cur.getDeposit();
-                budget -= newCost;
+                updateBudget(-newCost);;
             }
 
             if(cur.getOwner() == null)
@@ -213,7 +218,7 @@ public class Player
         }
         else if(budget > 0)
         {
-            --budget;
+            updateBudget(-1);;
         }
         else
         {
@@ -226,11 +231,11 @@ public class Player
         if(budget > 0)
         {
             Region cur = Game.getRegion(cityCrew_m, cityCrew_n);
-            --budget;
+            updateBudget(-1);;
             if(cost <= cur.getDeposit() && cur.getOwner().equals(this))
             {
                 cur.updateDeposit(-cost);
-                budget += cost;
+                updateBudget(cost);;
             }
             if(cur.getDeposit() == 0)
             {
@@ -247,7 +252,7 @@ public class Player
     {
         if(budget - cost > 0)
         {
-            budget -= cost+1;
+            updateBudget(-cost-1);
             int[] shootPosition = position(dir, cityCrew_m, cityCrew_n);
             int opRow = shootPosition[0];
             int opCol = shootPosition[1];
@@ -271,7 +276,7 @@ public class Player
         }
         else if(budget > 0)
         {
-            --budget;
+            updateBudget(-1);;
         }
         else
         {
