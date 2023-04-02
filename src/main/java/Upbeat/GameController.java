@@ -59,6 +59,21 @@ public class GameController
         return game.setPlan(playerMessage);
     }
 
+    @MessageMapping("/confirmPlan")
+    @SendTo("/topic/game")
+    public Game confirmPlan(PlayerMessage playerMessage)
+    {
+        if(playerMessage.getName().equals(game.getPlayer1().getName()))
+        {
+            game.setP1Ready(true);
+        }
+        else
+        {
+            game.setP2Ready(true);
+        }
+        return game;
+    }
+
     @SubscribeMapping("/game")
     public Game sendInitialGame()
     {

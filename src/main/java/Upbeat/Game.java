@@ -98,6 +98,8 @@ public class Game
         Configuration.setConfig(config);
         completeSet = true;
         setGame();
+        p1Ready = false;
+        p2Ready = false;
         return this;
     }
 
@@ -136,7 +138,7 @@ public class Game
         territory[rowP2][colP2].setCityCenter(player2);
         territory[rowP2][colP2].updateDeposit(Configuration.getInit_center_dep());
 
-        this.currentTurn = player1;
+        currentTurn = player1;
     }
 
     public Game setPlan(PlayerMessage playerMessage)
@@ -144,7 +146,7 @@ public class Game
         playerMgs = playerMessage.getName();
         errorMgs = null;
         Path file;
-        if(player1.getName().equals(playerMessage.getName()))
+        if(player1.getName().equals(playerMgs))
         {
             file = Paths.get("src/construction_plan_p1.txt");
         }
@@ -184,19 +186,31 @@ public class Game
         return this;
     }
 
-    public void doPlan() throws EvalError, IOException
+    public Game doPlan()
     {
-        if(currentTurn.equals(player1))
+        errorMgs = null;
+        try
         {
-            Path file = Paths.get("src/construction_plan_p1.txt");
-            String plan = Files.readString(file);
-            player1.doPlan(plan);
+            if (currentTurn.equals(player1))
+            {
+                Path file = Paths.get("src/construction_plan_p1.txt");
+                String plan = Files.readString(file);
+                player1.doPlan(plan);
+            }
+            else
+            {
+                Path file = Paths.get("src/construction_plan_p2.txt");
+                String plan = Files.readString(file);
+                player2.doPlan(plan);
+            }
         }
-        else
+        catch (EvalError e)
         {
-            Path file = Paths.get("src/construction_plan_p2.txt");
-            String plan = Files.readString(file);
-            player2.doPlan(plan);
+            errorMgs = e.getMessage();
+        }
+        catch (IOException e)
+        {
+            System.out.println(e.getMessage());
         }
         currentTurn = currentTurn.equals(player1) ? player2 : player1;
 
@@ -223,6 +237,8 @@ public class Game
                 region.updateDeposit((long) region.getInterest());
             }
         }
+
+        return this;
     }
 
     public static Region[][] getTerritory()
