@@ -109,7 +109,8 @@ public class GameController
         return game;
     }
 
-    @SubscribeMapping("/doPlan")
+    @MessageMapping("/doPlan")
+    @SendTo("/topic/game")
     public Game doPlan()
     {
         return game.doPlan();
