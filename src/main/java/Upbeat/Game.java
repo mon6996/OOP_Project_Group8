@@ -131,6 +131,8 @@ public class Game
 
         player1.setCityCenter(cityCenterP1);
         player2.setCityCenter(cityCenterP2);
+        player1.setCityCenter(55);
+        player2.setCityCenter(66);
 
         int rowP1 = player1.getCityCenter_m();
         int colP1 = player1.getCityCenter_n();
