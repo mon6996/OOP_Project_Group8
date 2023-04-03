@@ -178,6 +178,8 @@ public class Game
 
     public Game doPlan()
     {
+//        winner = player1;
+
         if(p1Ready && p2Ready && winner == null)
         {
             errorMgs = null;
@@ -187,12 +189,14 @@ public class Game
                 {
                     Path file = Paths.get("src/construction_plan_p1.txt");
                     String plan = Files.readString(file);
+                    System.out.println("Turn : " + player1.getTurn());
                     player1.doPlan(plan);
                 }
                 else
                 {
                     Path file = Paths.get("src/construction_plan_p2.txt");
                     String plan = Files.readString(file);
+                    System.out.println("Turn : " + player2.getTurn());
                     player2.doPlan(plan);
                 }
             }
@@ -204,6 +208,7 @@ public class Game
             {
                 System.out.println(e.getMessage());
             }
+            System.out.println("--------------------------------------");
             currentTurn = currentTurn.equals(player1) ? player2 : player1;
 
             if(player1.isLose()) winner = player2;

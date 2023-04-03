@@ -54,6 +54,15 @@ public class Player
         }
     }
 
+    public void endTurn()
+    {
+        endTurn = true;
+        turn++;
+        cityCrew_m = cityCenter_m;
+        cityCrew_n = cityCenter_n;
+        System.out.println(name + " : End Turn");
+    }
+
     public void updateBudget(long cost)
     {
         budget += cost;
@@ -84,8 +93,7 @@ public class Player
         p.evaluate(varPlayer, this);
         if(!endTurn)
         {
-            endTurn = true;
-            turn++;
+            endTurn();
         }
     }
 
@@ -99,10 +107,8 @@ public class Player
 
     public void done()
     {
-        endTurn = true;
-        turn++;
-        cityCrew_m = cityCenter_m;
-        cityCrew_n = cityCenter_n;
+        System.out.println(name + " : done");
+        endTurn();
     }
 
     public void relocate()
@@ -181,9 +187,10 @@ public class Player
                         cityCenter_m = cityCrew_m;
                         cityCenter_n = cityCrew_n;
                     }
+                    System.out.println(name + " : relocate");
                 }
             }
-            done();
+            endTurn();
         }
     }
 
@@ -194,7 +201,6 @@ public class Player
             if (budget > 0)
             {
                 updateBudget(-1);
-                ;
             }
             else
             {
@@ -211,6 +217,7 @@ public class Player
                 cityCrew_m = currow;
                 cityCrew_n = curcol;
             }
+            System.out.println(name + " : move");
         }
     }
 
@@ -222,33 +229,30 @@ public class Player
             if (budget - cost > 0)
             {
                 updateBudget(-1);
-                ;
                 if (cur.getDeposit() + cost <= Configuration.getMax_dep())
                 {
                     updateBudget(-cost);
-                    ;
                     cur.updateDeposit(cost);
                 }
                 else
                 {
                     long newCost = Configuration.getMax_dep() - cur.getDeposit();
                     updateBudget(-newCost);
-                    ;
                 }
 
                 if (cur.getOwner() == null)
                 {
                     cur.setOwner(this);
                 }
+                System.out.println(name + " : invest");
             }
             else if (budget > 0)
             {
                 updateBudget(-1);
-                ;
             }
             else
             {
-                done();
+                endTurn();
             }
         }
     }
@@ -261,21 +265,20 @@ public class Player
             {
                 Region cur = Game.getRegion(cityCrew_m, cityCrew_n);
                 updateBudget(-1);
-                ;
                 if (cost <= cur.getDeposit() && cur.getOwner().equals(this))
                 {
                     cur.updateDeposit(-cost);
                     updateBudget(cost);
-                    ;
                 }
                 if (cur.getDeposit() == 0)
                 {
                     cur.setOwner(null);
                 }
+                System.out.println(name + " : collect");
             }
             else
             {
-                done();
+                endTurn();
             }
         }
     }
@@ -308,6 +311,7 @@ public class Player
                         opponent.setOwner(null);
                     }
                 }
+                System.out.println(name + " : shoot");
             }
             else if (budget > 0)
             {
@@ -315,7 +319,7 @@ public class Player
             }
             else
             {
-                done();
+                endTurn();
             }
         }
     }
@@ -352,6 +356,7 @@ public class Player
                 }
                 dist++;
             }
+            System.out.println(name + " : opponent");
         }
         return 0L;
     }
@@ -376,6 +381,7 @@ public class Player
                     opPosition = position(dir, opPosition[0], opPosition[1]);
                 }
             }
+            System.out.println(name + " : nearby");
         }
         return 0L;
     }
