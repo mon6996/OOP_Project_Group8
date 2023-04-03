@@ -58,10 +58,9 @@ public class Region
         interest = deposit*r/100.0;
     }
 
-    public void setCityCenter(Player player)
+    public void setCityCenter(boolean cityCenter)
     {
-        owner = player;
-        isCityCenter = true;
+        isCityCenter = cityCenter;
     }
 
     public void changeCityCenter()

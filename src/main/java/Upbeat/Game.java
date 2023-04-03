@@ -31,6 +31,9 @@ public class Game
 
     public Game()
     {
+        player1 = null;
+        player2 = null;
+        territory = null;
     }
 
     public Game createPlayer(PlayerMessage playerMessage)
@@ -133,9 +136,11 @@ public class Game
         int colP1 = player1.getCityCenter_n();
         int rowP2 = player2.getCityCenter_m();
         int colP2 = player2.getCityCenter_n();
-        territory[rowP1][colP1].setCityCenter(player1);
+        territory[rowP1][colP1].setCityCenter(true);
+        territory[rowP1][colP1].setOwner(player1);
         territory[rowP1][colP1].updateDeposit(Configuration.getInit_center_dep());
-        territory[rowP2][colP2].setCityCenter(player2);
+        territory[rowP2][colP2].setCityCenter(true);
+        territory[rowP2][colP2].setOwner(player2);
         territory[rowP2][colP2].updateDeposit(Configuration.getInit_center_dep());
 
         currentTurn = player1;
@@ -156,7 +161,6 @@ public class Game
         }
         try
         {
-            System.out.println(playerMessage.getPlan());
             Tokenizer tkz = new PlanTokenizer(playerMessage.getPlan());
             Node p = new PlanParser(tkz).parse();
             Files.write(file, playerMessage.getPlan().getBytes(StandardCharsets.UTF_8));
@@ -174,56 +178,58 @@ public class Game
 
     public Game doPlan()
     {
-        errorMgs = null;
-        try
+        if(p1Ready && p2Ready && winner == null)
         {
-            if (currentTurn.equals(player1))
+            errorMgs = null;
+            try
             {
-                Path file = Paths.get("src/construction_plan_p1.txt");
-                String plan = Files.readString(file);
-                player1.doPlan(plan);
-            }
-            else
-            {
-                Path file = Paths.get("src/construction_plan_p2.txt");
-                String plan = Files.readString(file);
-                player2.doPlan(plan);
-            }
-        }
-        catch (EvalError e)
-        {
-            errorMgs = e.getMessage();
-        }
-        catch (IOException e)
-        {
-            System.out.println(e.getMessage());
-        }
-        currentTurn = currentTurn.equals(player1) ? player2 : player1;
-
-        if(player1.isLose())
-        {
-            winner = player2;
-        }
-        else if(player2.isLose())
-        {
-            winner = player1;
-        }
-
-        for (int i = 0; i < Configuration.getM(); i++)
-        {
-            for (int j = 0; j < Configuration.getN(); j++)
-            {
-                Region region = getRegion(i, j);
-                if(region.getDeposit() == 0 || region.getDeposit() == Configuration.getMax_dep() || region.getOwner() == null)
+                if (currentTurn.equals(player1))
                 {
-                    continue;
+                    Path file = Paths.get("src/construction_plan_p1.txt");
+                    String plan = Files.readString(file);
+                    player1.doPlan(plan);
                 }
-                region.updateInterestPct();
-                region.updateInterest();
-                region.updateDeposit((long) region.getInterest());
+                else
+                {
+                    Path file = Paths.get("src/construction_plan_p2.txt");
+                    String plan = Files.readString(file);
+                    player2.doPlan(plan);
+                }
+            }
+            catch (EvalError e)
+            {
+                errorMgs = e.getMessage();
+            }
+            catch (IOException e)
+            {
+                System.out.println(e.getMessage());
+            }
+            currentTurn = currentTurn.equals(player1) ? player2 : player1;
+
+            if(player1.isLose()) winner = player2;
+            else if(player2.isLose()) winner = player1;
+
+            if(winner == null)
+            {
+                for (int i = 0; i < Configuration.getM(); i++)
+                {
+                    for (int j = 0; j < Configuration.getN(); j++)
+                    {
+                        Region region = getRegion(i, j);
+                        if (region.getDeposit() == 0 ||
+                            region.getDeposit() == Configuration.getMax_dep() ||
+                            region.getOwner() == null ||
+                            region.getOwner().equals(currentTurn))
+                        {
+                            continue;
+                        }
+                        region.updateInterestPct();
+                        region.updateInterest();
+                        region.updateDeposit((long) region.getInterest());
+                    }
+                }
             }
         }
-
         return this;
     }
 
