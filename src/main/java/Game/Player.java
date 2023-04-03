@@ -40,6 +40,18 @@ public class Player
     public void lose()
     {
         lose = true;
+        budget = 0;
+        for (int i = 0; i < Configuration.getM(); i++)
+        {
+            for (int j = 0; j < Configuration.getN(); j++)
+            {
+                Region region = Game.getRegion(i, j);
+                if (region.getOwner() != null && region.getOwner().equals(this))
+                {
+                    region.setOwner(null);
+                }
+            }
+        }
     }
 
     public void updateBudget(long cost)
@@ -95,244 +107,274 @@ public class Player
 
     public void relocate()
     {
-        if(budget > 0)
+        if(!endTurn)
         {
-            updateBudget(-1);
-            Region cityCenter = Game.getRegion(cityCenter_m, cityCenter_n);
-            Region cur = Game.getRegion(cityCrew_m, cityCrew_n);
-            int[] next;
-            if (cur.getOwner() != null)
+            if (budget > 0)
             {
-                int dist = 0;
-                while ((cur.getRow() != cityCenter.getRow() && cur.getCol() != cityCenter.getCol()) || cur.getRow() != cityCenter.getRow() || cur.getCol() != cityCenter.getCol())
+                updateBudget(-1);
+                Region cityCenter = Game.getRegion(cityCenter_m, cityCenter_n);
+                Region cur = Game.getRegion(cityCrew_m, cityCrew_n);
+                int[] next;
+                if (cur.getOwner() != null)
                 {
-                    if(cityCenter.getCol() < cur.getCol())
+                    int dist = 0;
+                    while ((cur.getRow() != cityCenter.getRow() && cur.getCol() != cityCenter.getCol()) || cur.getRow() != cityCenter.getRow() || cur.getCol() != cityCenter.getCol())
                     {
-                        if(cityCenter.getRow() == cur.getRow())
+                        if (cityCenter.getCol() < cur.getCol())
                         {
-                            cityCenter = Game.getRegion(cur.getRow(), cur.getCol());
-                            dist += cur.getCol() - cityCenter.getCol();
+                            if (cityCenter.getRow() == cur.getRow())
+                            {
+                                cityCenter = Game.getRegion(cur.getRow(), cur.getCol());
+                                dist += cur.getCol() - cityCenter.getCol();
+                            }
+                            else if (cityCenter.getRow() < cur.getRow())
+                            {
+                                next = position(3, cityCenter.getRow(), cityCenter.getCol()); //downright
+                                cityCenter = Game.getRegion(next[0], next[1]);
+                            }
+                            else
+                            {
+                                next = position(2, cityCenter.getRow(), cityCenter.getCol()); //upright
+                                cityCenter = Game.getRegion(next[0], next[1]);
+                            }
                         }
-                        else if(cityCenter.getRow() < cur.getRow())
+                        else if (cityCenter.getCol() > cur.getCol())
                         {
-                            next = position(3, cityCenter.getRow(), cityCenter.getCol()); //downright
-                            cityCenter = Game.getRegion(next[0], next[1]);
+                            if (cityCenter.getRow() == cur.getRow())
+                            {
+                                cityCenter = Game.getRegion(cur.getRow(), cur.getCol());
+                                dist += cityCenter.getCol() - cur.getCol();
+                            }
+                            else if (cityCenter.getRow() < cur.getRow())
+                            {
+                                next = position(5, cityCenter.getRow(), cityCenter.getCol()); //downleft
+                                cityCenter = Game.getRegion(next[0], next[1]);
+                            }
+                            else
+                            {
+                                next = position(6, cityCenter.getRow(), cityCenter.getCol()); //upleft
+                                cityCenter = Game.getRegion(next[0], next[1]);
+                            }
                         }
                         else
                         {
-                            next = position(2, cityCenter.getRow(), cityCenter.getCol()); //upright
-                            cityCenter = Game.getRegion(next[0], next[1]);
+                            if (cityCenter.getRow() < cur.getRow())
+                            {
+                                cityCenter = Game.getRegion(cur.getRow(), cur.getCol());
+                                dist += cur.getRow() - cityCenter.getRow();
+                            }
+                            else
+                            {
+                                cityCenter = Game.getRegion(cur.getRow(), cur.getCol());
+                                dist += cityCenter.getRow() - cur.getRow();
+                            }
                         }
+                        dist++;
                     }
-                    else if(cityCenter.getCol() > cur.getCol())
+                    int cost = 5 * dist + 10;
+                    if (budget >= cost)
                     {
-                        if(cityCenter.getRow() == cur.getRow())
-                        {
-                            cityCenter = Game.getRegion(cur.getRow(), cur.getCol());
-                            dist += cityCenter.getCol() - cur.getCol();
-                        }
-                        else if(cityCenter.getRow() < cur.getRow())
-                        {
-                            next = position(5, cityCenter.getRow(), cityCenter.getCol()); //downleft
-                            cityCenter = Game.getRegion(next[0], next[1]);
-                        }
-                        else
-                        {
-                            next = position(6, cityCenter.getRow(), cityCenter.getCol()); //upleft
-                            cityCenter = Game.getRegion(next[0], next[1]);
-                        }
+                        updateBudget(-cost);
+                        Game.getRegion(cityCenter_m, cityCenter_n).changeCityCenter();
+                        cur.setCityCenter(true);
+                        cur.setOwner(this);
+                        cityCenter_m = cityCrew_m;
+                        cityCenter_n = cityCrew_n;
                     }
-                    else
-                    {
-                        if(cityCenter.getRow() < cur.getRow())
-                        {
-                            cityCenter = Game.getRegion(cur.getRow(), cur.getCol());
-                            dist += cur.getRow() - cityCenter.getRow();
-                        }
-                        else
-                        {
-                            cityCenter = Game.getRegion(cur.getRow(), cur.getCol());
-                            dist += cityCenter.getRow() - cur.getRow();
-                        }
-                    }
-                    dist++;
-                }
-                int cost = 5*dist + 10;
-                if(budget >= cost)
-                {
-                    updateBudget(-cost);;
-                    Game.getRegion(cityCenter_m, cityCenter_n).changeCityCenter();
-                    cur.setCityCenter(this);
-                    cityCenter_m = cityCrew_m;
-                    cityCenter_n = cityCrew_n;
                 }
             }
+            done();
         }
-        done();
     }
 
     public void move(long dir)
     {
-        if(budget > 0)
+        if(!endTurn)
         {
-            updateBudget(-1);;
-        }
-        else
-        {
-            done();
-        }
+            if (budget > 0)
+            {
+                updateBudget(-1);
+                ;
+            }
+            else
+            {
+                done();
+            }
 
-        int[] position = position(dir, cityCrew_m, cityCrew_n);
-        int currow = position[0];
-        int curcol = position[1];
+            int[] position = position(dir, cityCrew_m, cityCrew_n);
+            int currow = position[0];
+            int curcol = position[1];
 
-        Player owner = Game.getRegion(currow, curcol).getOwner();
-        if(owner == null || owner.equals(this))
-        {
-            cityCrew_m = currow;
-            cityCrew_n = curcol;
+            Player owner = Game.getRegion(currow, curcol).getOwner();
+            if (owner == null || owner.equals(this))
+            {
+                cityCrew_m = currow;
+                cityCrew_n = curcol;
+            }
         }
     }
 
     public void invest(long cost)
     {
-        Region cur = Game.getRegion(cityCrew_m, cityCrew_n);
-        if(budget - cost > 0)
+        if(!endTurn)
         {
-            updateBudget(-1);;
-            if(cur.getDeposit() + cost <= Configuration.getMax_dep())
+            Region cur = Game.getRegion(cityCrew_m, cityCrew_n);
+            if (budget - cost > 0)
             {
-                updateBudget(-cost);;
-                cur.updateDeposit(cost);
+                updateBudget(-1);
+                ;
+                if (cur.getDeposit() + cost <= Configuration.getMax_dep())
+                {
+                    updateBudget(-cost);
+                    ;
+                    cur.updateDeposit(cost);
+                }
+                else
+                {
+                    long newCost = Configuration.getMax_dep() - cur.getDeposit();
+                    updateBudget(-newCost);
+                    ;
+                }
+
+                if (cur.getOwner() == null)
+                {
+                    cur.setOwner(this);
+                }
+            }
+            else if (budget > 0)
+            {
+                updateBudget(-1);
+                ;
             }
             else
             {
-                long newCost = Configuration.getMax_dep() - cur.getDeposit();
-                updateBudget(-newCost);;
+                done();
             }
-
-            if(cur.getOwner() == null)
-            {
-                cur.setOwner(this);
-            }
-        }
-        else if(budget > 0)
-        {
-            updateBudget(-1);;
-        }
-        else
-        {
-            done();
         }
     }
 
     public void collect (long cost)
     {
-        if(budget > 0)
+        if(!endTurn)
         {
-            Region cur = Game.getRegion(cityCrew_m, cityCrew_n);
-            updateBudget(-1);;
-            if(cost <= cur.getDeposit() && cur.getOwner().equals(this))
+            if (budget > 0)
             {
-                cur.updateDeposit(-cost);
-                updateBudget(cost);;
+                Region cur = Game.getRegion(cityCrew_m, cityCrew_n);
+                updateBudget(-1);
+                ;
+                if (cost <= cur.getDeposit() && cur.getOwner().equals(this))
+                {
+                    cur.updateDeposit(-cost);
+                    updateBudget(cost);
+                    ;
+                }
+                if (cur.getDeposit() == 0)
+                {
+                    cur.setOwner(null);
+                }
             }
-            if(cur.getDeposit() == 0)
+            else
             {
-                cur.setOwner(null);
+                done();
             }
-        }
-        else
-        {
-            done();
         }
     }
 
     public void shoot(long dir, long cost)
     {
-        if(budget - cost > 0)
+        if(!endTurn)
         {
-            updateBudget(-cost-1);
-            int[] shootPosition = position(dir, cityCrew_m, cityCrew_n);
-            int opRow = shootPosition[0];
-            int opCol = shootPosition[1];
-            Region opponent = Game.getRegion(opRow, opCol);
-            if(opponent.getOwner() != null)
+            if (budget - cost > 0)
             {
-                if(cost < opponent.getDeposit())
+                updateBudget(-cost - 1);
+                int[] shootPosition = position(dir, cityCrew_m, cityCrew_n);
+                int opRow = shootPosition[0];
+                int opCol = shootPosition[1];
+                Region opponent = Game.getRegion(opRow, opCol);
+                if (opponent.getOwner() != null)
                 {
-                    opponent.updateDeposit(-cost);
-                }
-                else
-                {
-                    opponent.updateDeposit(-opponent.getDeposit());
-                    if(opponent.isCityCenter())
+                    if (cost < opponent.getDeposit())
                     {
-                        opponent.getOwner().lose();
+                        opponent.updateDeposit(-cost);
                     }
-                    opponent.setOwner(null);
+                    else
+                    {
+                        opponent.updateDeposit(-opponent.getDeposit());
+                        if (opponent.isCityCenter())
+                        {
+                            opponent.setCityCenter(false);
+                            opponent.getOwner().lose();
+                        }
+                        opponent.setOwner(null);
+                    }
                 }
             }
-        }
-        else if(budget > 0)
-        {
-            updateBudget(-1);;
-        }
-        else
-        {
-            done();
+            else if (budget > 0)
+            {
+                updateBudget(-1);
+            }
+            else
+            {
+                done();
+            }
         }
     }
 
     public long opponent()
     {
-        int[][] opPosition = new int[6][2];
-        for (int i = 0; i < 6; i++)
+        if(!endTurn)
         {
-            opPosition[i] = new int[]{cityCrew_m, cityCrew_n};
-        }
-        long dist = 1;
-        while (opPosition[0] != null && opPosition[1] != null && opPosition[2] != null && opPosition[3] != null && opPosition[4] != null && opPosition[5] != null)
-        {
+            int[][] opPosition = new int[6][2];
             for (int i = 0; i < 6; i++)
             {
-                if(opPosition[i] == null) continue;
-                int[] next = position(i+1, opPosition[i][0], opPosition[i][1]);
-                Region opponent = Game.getRegion(next[0], next[1]);
-                if(opponent.getOwner() != null && !opponent.getOwner().equals(this))
-                {
-                    return (dist*10) + i + 1;
-                }
-                if(opPosition[i][0] == next[0] && opPosition[i][1] == next[1])
-                {
-                    opPosition[i] = null;
-                }
-                else
-                {
-                    opPosition[i] = next;
-                }
+                opPosition[i] = new int[]{cityCrew_m, cityCrew_n};
             }
-            dist++;
+            long dist = 1;
+            while (opPosition[0] != null && opPosition[1] != null && opPosition[2] != null && opPosition[3] != null && opPosition[4] != null && opPosition[5] != null)
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    if (opPosition[i] == null) continue;
+                    int[] next = position(i + 1, opPosition[i][0], opPosition[i][1]);
+                    Region opponent = Game.getRegion(next[0], next[1]);
+                    if (opponent.getOwner() != null && !opponent.getOwner().equals(this))
+                    {
+                        return (dist * 10) + i + 1;
+                    }
+                    if (opPosition[i][0] == next[0] && opPosition[i][1] == next[1])
+                    {
+                        opPosition[i] = null;
+                    }
+                    else
+                    {
+                        opPosition[i] = next;
+                    }
+                }
+                dist++;
+            }
         }
         return 0L;
     }
 
     public long nearby(long dir)
     {
-        long dist = 0;
-        int[] opPosition = position(dir, cityCrew_m, cityCrew_n);
-        while (opPosition[0] > 0 && opPosition[0] < Configuration.getM()-1 && opPosition[1] > 0 && opPosition[1] < Configuration.getN()-1)
+        if(!endTurn)
         {
-            dist++;
-            Region opponent = Game.getRegion(opPosition[0], opPosition[1]);
-            int digitsDeposit = Long.toString(opponent.getDeposit()).length();
-            if(opponent.getOwner() != null && !opponent.getOwner().equals(this))
+            long dist = 0;
+            int[] opPosition = position(dir, cityCrew_m, cityCrew_n);
+            while (opPosition[0] > 0 && opPosition[0] < Configuration.getM() - 1 && opPosition[1] > 0 && opPosition[1] < Configuration.getN() - 1)
             {
-                return 100*dist + digitsDeposit;
-            }
-            if(opPosition[0] > 0 && opPosition[0] < Configuration.getM()-1 && opPosition[1] > 0 && opPosition[1] < Configuration.getN()-1)
-            {
-                opPosition = position(dir, opPosition[0], opPosition[1]);
+                dist++;
+                Region opponent = Game.getRegion(opPosition[0], opPosition[1]);
+                int digitsDeposit = Long.toString(opponent.getDeposit()).length();
+                if (opponent.getOwner() != null && !opponent.getOwner().equals(this))
+                {
+                    return 100 * dist + digitsDeposit;
+                }
+                if (opPosition[0] > 0 && opPosition[0] < Configuration.getM() - 1 && opPosition[1] > 0 && opPosition[1] < Configuration.getN() - 1)
+                {
+                    opPosition = position(dir, opPosition[0], opPosition[1]);
+                }
             }
         }
         return 0L;

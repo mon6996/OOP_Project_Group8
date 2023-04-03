@@ -101,6 +101,14 @@ public class GameController
         return game;
     }
 
+    @MessageMapping("/newGame")
+    @SendTo("/topic/game")
+    public Game newGame()
+    {
+        game = new Game();
+        return game;
+    }
+
     @SubscribeMapping("/doPlan")
     public Game doPlan()
     {
